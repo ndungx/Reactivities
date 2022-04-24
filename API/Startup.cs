@@ -1,5 +1,7 @@
 using System.Text;
+using System.Threading.Tasks;
 using API.Middleware;
+using API.SignalR;
 using Application.Activities;
 using Application.Interfaces;
 using Domain;
@@ -53,6 +55,8 @@ namespace API
 
             services.AddAutoMapper(typeof(List.Handler).Assembly);
 
+            services.AddSignalR();
+
             services
                 .AddControllers(opt =>
                 {
@@ -77,7 +81,8 @@ namespace API
 
             services.AddAuthorization(opt =>
             {
-                opt.AddPolicy("IsActivityHost", policy => {
+                opt.AddPolicy("IsActivityHost", policy =>
+                {
                     policy.Requirements.Add(new IsHostRequirement());
                 });
             });
@@ -95,12 +100,27 @@ namespace API
                         ValidateAudience = false,
                         ValidateIssuer = false,
                     };
+                    opt.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToekn = context.Request.Query["access_token"];
+                            var path = context.HttpContext.Request.Path;
+
+                            if (!string.IsNullOrEmpty(accessToekn) && (path.StartsWithSegments("/chat")))
+                            {
+                                context.Token = accessToekn;
+                            }
+
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
 
             services.AddScoped<IJwtGenerator, JwtGenerator>();
             services.AddScoped<IUserAccessor, UserAccessor>();
             services.AddScoped<IPhotoAccessor, PhotoAccessor>();
-            
+
             services.Configure<CloudinarySettings>(Configuration.GetSection("Cloudinary"));
         }
 
@@ -129,6 +149,7 @@ namespace API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("/chat");
             });
         }
     }
