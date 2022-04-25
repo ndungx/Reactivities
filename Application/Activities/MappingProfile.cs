@@ -23,6 +23,10 @@ namespace Application.Activities
                     opt => opt.MapFrom(
                         src => src.AppUser.Photos.FirstOrDefault(x => x.IsMain).Url
                     )
+                )
+                .ForMember(
+                    dest => dest.Following,
+                    opt => opt.MapFrom<FollowingResolver>()
                 );
         }
     }
