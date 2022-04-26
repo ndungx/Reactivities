@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Application;
 using Application.Activities;
@@ -7,15 +6,16 @@ using Domain;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static Application.Activities.List;
 
 namespace API.Controllers
 {
     public class ActivitiesController : BaseController
     {
         [HttpGet]
-        public async Task<ActionResult<List<ActivityDTO>>> List()
+        public async Task<ActionResult<ActivitiesEnvelope>> List(int? limit, int? offset)
         {
-            return await Mediator.Send(new List.Query());
+            return await Mediator.Send(new List.Query(limit, offset));
         }
 
         [HttpGet("{id}")]
