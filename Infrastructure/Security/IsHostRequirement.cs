@@ -26,8 +26,8 @@ namespace Infrastructure.Security
             if (context.Resource is AuthorizationFilterContext authContext)
             {
                 var currentUserName = _httpContextAccessor
-                .HttpContext.User?.Claims?
-                .SingleOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+                    .HttpContext.User?.Claims?
+                    .SingleOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
 
                 var activityId = Guid.Parse(authContext.RouteData.Values["id"].ToString());
 

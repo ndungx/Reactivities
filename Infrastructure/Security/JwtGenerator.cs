@@ -13,7 +13,6 @@ namespace Infrastructure.Security
     public class JwtGenerator : IJwtGenerator
     {
         private readonly SymmetricSecurityKey _key;
-        private readonly IConfiguration _configuration;
         public JwtGenerator(IConfiguration configuration)
         {
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["TokenKey"]));
