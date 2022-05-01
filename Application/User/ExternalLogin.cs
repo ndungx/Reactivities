@@ -43,43 +43,47 @@ namespace Application.User
 
                 var user = await _userManager.FindByEmailAsync(userInfo.Email);
 
-                if (user == null)
+                var refreshToken = _jwtGenerator.GenerateRefreshToken();
+
+                if (user != null)
                 {
-                    user = new AppUser
-                    {
-                        DisplayName = userInfo.Name,
-                        Id = userInfo.Id,
-                        Email = userInfo.Email,
-                        UserName = "fb_" + userInfo.Id
-                    };
+                    user.RefreshToken.Add(refreshToken);
 
-                    var photo = new Photo
-                    {
-                        Id = "fb_" + userInfo.Id,
-                        Url = userInfo.Picture.Data.Url,
-                        IsMain = true
-                    };
+                    await _userManager.UpdateAsync(user);
 
-                    user.Photos.Add(photo);
-
-                    var result = await _userManager.CreateAsync(user);
-
-                    if (!result.Succeeded)
-                    {
-                        throw new RestException(
-                            HttpStatusCode.BadRequest,
-                            new { User = "Problem creating user" }
-                        );
-                    }
+                    return new User(user, _jwtGenerator, refreshToken.Token);
                 }
 
-                return new User
+                user = new AppUser
                 {
-                    DisplayName = user.DisplayName,
-                    Token = _jwtGenerator.CreateToken(user),
-                    Username = user.UserName,
-                    Image = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
+                    DisplayName = userInfo.Name,
+                    Id = userInfo.Id,
+                    Email = userInfo.Email,
+                    UserName = "fb_" + userInfo.Id
                 };
+
+                var photo = new Photo
+                {
+                    Id = "fb_" + userInfo.Id,
+                    Url = userInfo.Picture.Data.Url,
+                    IsMain = true
+                };
+
+                user.Photos.Add(photo);
+                
+                user.RefreshToken.Add(refreshToken);
+
+                var result = await _userManager.CreateAsync(user);
+
+                if (!result.Succeeded)
+                {
+                    throw new RestException(
+                        HttpStatusCode.BadRequest,
+                        new { User = "Problem creating user" }
+                    );
+                }
+
+                return new User(user, _jwtGenerator, refreshToken.Token);
             }
         }
     }
