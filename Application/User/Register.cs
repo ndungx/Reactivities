@@ -1,5 +1,5 @@
 using System;
-using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Errors;
@@ -51,12 +51,18 @@ namespace Application.User
             {
                 if (await _context.Users.AnyAsync(x => x.Email == request.Email))
                 {
-                    throw new RestException(System.Net.HttpStatusCode.BadRequest, new { Email = "Email already exists" });
+                    throw new RestException(
+                        HttpStatusCode.BadRequest, 
+                        new { Email = "Email already exists" }
+                    );
                 }
 
                 if (await _context.Users.AnyAsync(x => x.UserName == request.Username))
                 {
-                    throw new RestException(System.Net.HttpStatusCode.BadRequest, new { Username = "Username already exists" });
+                    throw new RestException(
+                        HttpStatusCode.BadRequest, 
+                        new { Username = "Username already exists" }
+                    );
                 }
 
                 var user = new AppUser
