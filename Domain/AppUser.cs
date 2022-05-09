@@ -9,6 +9,7 @@ namespace Domain
         public AppUser()
         {
             Photos = new Collection<Photo>();
+            RefreshToken = new Collection<RefreshToken>();
         }
 
         public string DisplayName { get; set; }
