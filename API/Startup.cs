@@ -128,12 +128,12 @@ namespace API
                     {
                         OnMessageReceived = context =>
                         {
-                            var accessToekn = context.Request.Query["access_token"];
+                            var accessToken = context.Request.Query["access_token"];
                             var path = context.HttpContext.Request.Path;
 
-                            if (!string.IsNullOrEmpty(accessToekn) && (path.StartsWithSegments("/chat")))
+                            if (!string.IsNullOrEmpty(accessToken) && (path.StartsWithSegments("/chat")))
                             {
-                                context.Token = accessToekn;
+                                context.Token = accessToken;
                             }
 
                             return Task.CompletedTask;
