@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  app:
+    container_name: reactivities-server
+    build:
+      context: .
+      dockerfile: Dockerfile.development
+    ports:
+      - 8080:80
+    depends_on:
+      - db
+    environment:
+      ASPNETCORE_URLS: "http://+:80"
+      APP_SETTINGS: ${APP_SETTINGS}
+  db:
+    container_name: db
+    image: "mcr.microsoft.com/mssql/server:2019-CU15-ubuntu-20.04"
+    user: root
+    ports:
+      - 1433:1433
+    environment:
+      SA_PASSWORD: "QWEasd123"
+      ACCEPT_EULA: "Y"
+    restart: always
+    volumes:
+      - ./SQL/:/var/opt/mssql/data

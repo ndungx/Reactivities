@@ -1,0 +1,7 @@
+**/bin
+**/obj
+**/.gitignore
+**/.git
+**/.github
+**/Dockerfile*
+**/global.json
